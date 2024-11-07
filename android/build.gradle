@@ -18,6 +18,7 @@ rootProject.allprojects {
     repositories {
         mavenCentral()
         google()
+        maven { url 'https://developer.huawei.com/repo/' }
     }
 }
 
@@ -37,6 +38,18 @@ android {
     lintOptions {
         disable 'InvalidPackage'
     }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    kotlinOptions {
+        jvmTarget = "17"
+    }
+    kotlin {
+        jvmToolchain(17)
+     }
 }
 
 dependencies {
@@ -44,4 +57,7 @@ dependencies {
     implementation 'com.google.android.gms:play-services-location:21.0.1'
     implementation 'androidx.localbroadcastmanager:localbroadcastmanager:1.1.0'
     implementation "androidx.core:core-ktx:1.9.0"
+    implementation("com.huawei.hms:location:6.9.0.300") {
+        exclude(group: "com.huawei.hms", module: 'hianalytics')
+    }
 }
