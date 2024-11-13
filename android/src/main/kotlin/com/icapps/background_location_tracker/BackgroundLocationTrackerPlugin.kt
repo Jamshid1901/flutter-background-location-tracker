@@ -26,45 +26,36 @@ class BackgroundLocationTrackerPlugin : FlutterPlugin, MethodCallHandler, Activi
     private var lifecycle: Lifecycle? = null
     private var methodCallHelper: MethodCallHelper? = null
 
-    // This method is called when the plugin is attached to the Flutter engine
     override fun onAttachedToEngine(binding: FlutterPlugin.FlutterPluginBinding) {
-        // Register the background location manager
         registerBackgroundLocationManager(binding.binaryMessenger, binding.applicationContext)
     }
 
-    // This method is called when the plugin is detached from the Flutter engine
     override fun onDetachedFromEngine(binding: FlutterPlugin.FlutterPluginBinding) {
         // You can clean up resources here if needed
     }
 
-    // This method handles the method calls from Flutter
     override fun onMethodCall(call: MethodCall, result: Result) {
         methodCallHelper?.handle(call, result)
     }
 
-    // Called when the plugin is attached to an activity
     override fun onAttachedToActivity(binding: ActivityPluginBinding) {
         lifecycle = FlutterLifecycleAdapter.getActivityLifecycle(binding)
         if (methodCallHelper == null) {
             ActivityCounter.attach(binding.activity)
             methodCallHelper = MethodCallHelper.getInstance(binding.activity.applicationContext)
         }
-        // Ensure the method call helper observes lifecycle events
         methodCallHelper?.let {
             lifecycle?.removeObserver(it)
             lifecycle?.addObserver(it)
         }
     }
 
-    // Called when the plugin is detached from the activity
     override fun onDetachedFromActivity() {
         // Handle cleanup if necessary
     }
 
-    // Called when the activity is reattached for configuration changes
     override fun onReattachedToActivityForConfigChanges(binding: ActivityPluginBinding) {}
 
-    // Called when the activity is detached for configuration changes
     override fun onDetachedFromActivityForConfigChanges() {}
 
     companion object {
@@ -73,7 +64,6 @@ class BackgroundLocationTrackerPlugin : FlutterPlugin, MethodCallHandler, Activi
 
         var pluginRegistryCallback: PluginRegistry.PluginRegistrantCallback? = null
 
-        // This method registers the background location manager
         @JvmStatic
         private fun registerBackgroundLocationManager(messenger: BinaryMessenger, ctx: Context) {
             val channel = MethodChannel(messenger, FOREGROUND_CHANNEL_NAME)
@@ -82,7 +72,6 @@ class BackgroundLocationTrackerPlugin : FlutterPlugin, MethodCallHandler, Activi
             channel.setMethodCallHandler(plugin)
         }
 
-        // Method to register the plugin with the older Flutter embedding (Deprecated)
         @Deprecated(message = "Use the Android v2 embedding method.")
         @JvmStatic
         fun registerWith(registrar: PluginRegistry.Registrar) {
@@ -106,7 +95,6 @@ class BackgroundLocationTrackerPlugin : FlutterPlugin, MethodCallHandler, Activi
             channel.setMethodCallHandler(plugin)
         }
 
-        // Deprecated callback method
         @Deprecated(message = "Use the Android v2 embedding method.")
         @JvmStatic
         fun setPluginRegistrantCallback(pluginRegistryCallback: PluginRegistry.PluginRegistrantCallback) {
@@ -114,10 +102,10 @@ class BackgroundLocationTrackerPlugin : FlutterPlugin, MethodCallHandler, Activi
         }
     }
 
-    // Proxy lifecycle provider for older embedding support
     @Deprecated(message = "Use the Android v2 embedding method.")
     private class ProxyLifecycleProvider internal constructor(activity: Activity) : Application.ActivityLifecycleCallbacks, LifecycleOwner {
-        val lifecycle = LifecycleRegistry(this) // Public access enabled
+        // Override the lifecycle property
+        override val lifecycle = LifecycleRegistry(this) // Public access enabled
         private val registrarActivityHashCode: Int = activity.hashCode()
 
         init {
@@ -169,6 +157,7 @@ class BackgroundLocationTrackerPlugin : FlutterPlugin, MethodCallHandler, Activi
             lifecycle.handleLifecycleEvent(Lifecycle.Event.ON_DESTROY)
         }
 
+        // Override getLifecycle method
         override fun getLifecycle(): Lifecycle = lifecycle
     }
 }
