@@ -83,10 +83,9 @@ class BackgroundLocationTrackerPlugin : FlutterPlugin, MethodCallHandler, Activi
             }
 
             val lifecycle: Lifecycle = if (activity is LifecycleOwner) {
-                (activity as LifecycleOwner).lifecycle
+                activity.lifecycle
             } else {
                 Logger.debug(TAG, "Your activity has not implemented a lifecycle owner. We will create one for you.")
-                @Suppress("DEPRECATION")
                 ProxyLifecycleProvider(activity).lifecycle
             }
 
@@ -112,7 +111,7 @@ class BackgroundLocationTrackerPlugin : FlutterPlugin, MethodCallHandler, Activi
 
     @Deprecated(message = "Use the Android v2 embedding method.")
     private class ProxyLifecycleProvider internal constructor(activity: Activity) : Application.ActivityLifecycleCallbacks, LifecycleOwner {
-        private val lifecycle = LifecycleRegistry(this)
+        val lifecycle = LifecycleRegistry(this) // Public access enabled
         private val registrarActivityHashCode: Int = activity.hashCode()
 
         init {
