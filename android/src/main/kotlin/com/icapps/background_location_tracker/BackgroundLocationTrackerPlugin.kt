@@ -31,7 +31,7 @@ class BackgroundLocationTrackerPlugin : FlutterPlugin, MethodCallHandler, Activi
     }
 
     override fun onDetachedFromEngine(binding: FlutterPlugin.FlutterPluginBinding) {
-        // You can clean up resources here if needed
+        // Clean up resources if needed
     }
 
     override fun onMethodCall(call: MethodCall, result: Result) {
@@ -51,7 +51,7 @@ class BackgroundLocationTrackerPlugin : FlutterPlugin, MethodCallHandler, Activi
     }
 
     override fun onDetachedFromActivity() {
-        // Handle cleanup if necessary
+        // Handle cleanup if needed
     }
 
     override fun onReattachedToActivityForConfigChanges(binding: ActivityPluginBinding) {}
@@ -104,8 +104,8 @@ class BackgroundLocationTrackerPlugin : FlutterPlugin, MethodCallHandler, Activi
 
     @Deprecated(message = "Use the Android v2 embedding method.")
     private class ProxyLifecycleProvider internal constructor(activity: Activity) : Application.ActivityLifecycleCallbacks, LifecycleOwner {
-        // Override the lifecycle property to satisfy the LifecycleOwner interface
-        override val lifecycle: Lifecycle = LifecycleRegistry(this) // Public access enabled
+        // 'lifecycle' needs to be explicitly marked as 'override' to satisfy the LifecycleOwner interface
+        override val lifecycle: Lifecycle = LifecycleRegistry(this) // Marked as override
         private val registrarActivityHashCode: Int = activity.hashCode()
 
         init {
@@ -113,51 +113,39 @@ class BackgroundLocationTrackerPlugin : FlutterPlugin, MethodCallHandler, Activi
         }
 
         override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
-            if (activity.hashCode() != registrarActivityHashCode) {
-                return
-            }
+            if (activity.hashCode() != registrarActivityHashCode) return
             lifecycle.handleLifecycleEvent(Lifecycle.Event.ON_CREATE)
         }
 
         override fun onActivityStarted(activity: Activity) {
-            if (activity.hashCode() != registrarActivityHashCode) {
-                return
-            }
+            if (activity.hashCode() != registrarActivityHashCode) return
             lifecycle.handleLifecycleEvent(Lifecycle.Event.ON_START)
         }
 
         override fun onActivityResumed(activity: Activity) {
-            if (activity.hashCode() != registrarActivityHashCode) {
-                return
-            }
+            if (activity.hashCode() != registrarActivityHashCode) return
             lifecycle.handleLifecycleEvent(Lifecycle.Event.ON_RESUME)
         }
 
         override fun onActivityPaused(activity: Activity) {
-            if (activity.hashCode() != registrarActivityHashCode) {
-                return
-            }
+            if (activity.hashCode() != registrarActivityHashCode) return
             lifecycle.handleLifecycleEvent(Lifecycle.Event.ON_PAUSE)
         }
 
         override fun onActivityStopped(activity: Activity) {
-            if (activity.hashCode() != registrarActivityHashCode) {
-                return
-            }
+            if (activity.hashCode() != registrarActivityHashCode) return
             lifecycle.handleLifecycleEvent(Lifecycle.Event.ON_STOP)
         }
 
         override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) {}
 
         override fun onActivityDestroyed(activity: Activity) {
-            if (activity.hashCode() != registrarActivityHashCode) {
-                return
-            }
+            if (activity.hashCode() != registrarActivityHashCode) return
             activity.application.unregisterActivityLifecycleCallbacks(this)
             lifecycle.handleLifecycleEvent(Lifecycle.Event.ON_DESTROY)
         }
 
-        // Override getLifecycle method to comply with LifecycleOwner
+        // 'getLifecycle' must be overridden to satisfy the LifecycleOwner interface
         override fun getLifecycle(): Lifecycle = lifecycle
     }
 }
